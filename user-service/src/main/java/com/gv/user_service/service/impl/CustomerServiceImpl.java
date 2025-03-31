@@ -13,8 +13,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerEntity customerEntity = new CustomerEntity();
         BeanUtils.copyProperties(registerCustomer, customerEntity);
         CustomerEntity savedUser = customerRepository.save(customerEntity);
-        return savedUser.getUserName() != null;
+        return savedUser.getId() != null;
     }
 
     @Override
@@ -78,10 +80,29 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean deleteCustomerByEmail(String email) {
+    public boolean deleteCustomerByEmail(String email) throws ResourceNotFoundException {
+        log.info("[CustomerServiceImpl] >> [deleteCustomerByEmail] : {}", email);
         CustomerEntity customerEntity = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this email:" + email));
         customerRepository.delete(customerEntity);
         return true;
     }
+
+    @Override
+    public List<GetCustomerDetails> getAllCustomers() {
+        List<CustomerEntity> customerEntityList = customerRepository.findAll();
+        List<GetCustomerDetails> getCustomerDetailsList = customerEntityList.stream().map((customerEntity) -> {
+            return GetCustomerDetails.builder()
+                    .id(customerEntity.getId())
+                    .userName(customerEntity.getUserName())
+                    .password(customerEntity.getPassword())
+                    .email(customerEntity.getEmail())
+                    .role(customerEntity.getRole())
+                    .name(customerEntity.getName())
+                    .build();
+        }).collect(Collectors.toList());
+        return getCustomerDetailsList;
+    }
 }
+
+//            return new GetCustomerDetails(customerEntity.getId(), customerEntity.getName(), customerEntity.getUserName(), customerEntity.getEmail(), customerEntity.getMobile(), customerEntity.getRole(), customerEntity.getPassword());

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class GetCustomerDetails {
     private Long id;
     private String userName;
+    private String password;
     private String name;
     private String email;
     private String mobile;

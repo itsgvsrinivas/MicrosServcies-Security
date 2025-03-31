@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -52,14 +54,21 @@ public class CustomerController {
     public ResponseEntity<APIResponse> getCustomerById(@PathVariable Long id) {
         GetCustomerDetails getCustomerDetails = customerService.getCustomerById(id);
         APIResponse apiResponse = ResponseUtils.createApiResponse(true, Constants.STATUS_CODE_SUCCESS, Constants.STATUS_DESC_SUCCESS, getCustomerDetails, null);
-        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<APIResponse> deleteCustomerById(@PathVariable String email) {
+    public ResponseEntity<APIResponse> deleteCustomerById(@PathVariable Long id, @RequestParam String email) {
         boolean isSuccess = customerService.deleteCustomerByEmail(email);
         APIResponse apiResponse = ResponseUtils.createApiResponse(isSuccess, Constants.STATUS_CODE_SUCCESS, Constants.STATUS_DESC_SUCCESS, isSuccess, null);
-        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<APIResponse> getCustomers() {
+        List<GetCustomerDetails> getCustomerDetails = customerService.getAllCustomers();
+        APIResponse apiResponse = ResponseUtils.createApiResponse(true, Constants.STATUS_CODE_SUCCESS, Constants.STATUS_DESC_SUCCESS, getCustomerDetails, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @PreDestroy
