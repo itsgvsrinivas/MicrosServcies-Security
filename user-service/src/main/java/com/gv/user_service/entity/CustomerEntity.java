@@ -1,6 +1,5 @@
 package com.gv.user_service.entity;
 
-import com.sun.jdi.PrimitiveValue;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,7 +1,7 @@
 package com.gv.user_service.service;
 
-import com.gv.user_service.dto.response.APIResponse;
 import com.gv.user_service.dto.request.RegisterCustomer;
+import com.gv.user_service.dto.response.APIResponse;
 import com.gv.user_service.dto.response.GetCustomerDetails;
 
 import java.util.List;
