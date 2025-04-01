@@ -57,8 +57,15 @@ public class CustomerController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("id/{id}")
+    public ResponseEntity<APIResponse> deleteCustomerById(@PathVariable Long id) {
+        boolean isSuccess = customerService.deleteCustomerById(id);
+        APIResponse apiResponse = ResponseUtils.createApiResponse(isSuccess, Constants.STATUS_CODE_SUCCESS, Constants.STATUS_DESC_SUCCESS, isSuccess, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
     @DeleteMapping("{id}")
-    public ResponseEntity<APIResponse> deleteCustomerById(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<APIResponse> deleteCustomerByEmail(@PathVariable Long id, @RequestParam String email) {
         boolean isSuccess = customerService.deleteCustomerByEmail(email);
         APIResponse apiResponse = ResponseUtils.createApiResponse(isSuccess, Constants.STATUS_CODE_SUCCESS, Constants.STATUS_DESC_SUCCESS, isSuccess, null);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

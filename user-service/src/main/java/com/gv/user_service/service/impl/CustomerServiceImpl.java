@@ -10,9 +10,14 @@ import com.gv.user_service.repository.CustomerRepository;
 import com.gv.user_service.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceImpl implements CustomerService, UserDetailsService {
 
     private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -36,16 +41,26 @@ public class CustomerServiceImpl implements CustomerService {
         String randomUserId = UUID.randomUUID().toString();
 
         Optional<CustomerEntity> customerEntityOptional = customerRepository.findByUserName(registerCustomer.getUserName());
-        if (customerEntityOptional.isPresent()) {
+        if (customerEntityOptional.isEmpty()) {
+
+            String encPwd = passwordEncoder.encode(registerCustomer.getPassword());
+            registerCustomer.setPassword(encPwd);
+
+            CustomerEntity customerEntity = new CustomerEntity();
+            BeanUtils.copyProperties(registerCustomer, customerEntity);
+            CustomerEntity savedUser = customerRepository.save(customerEntity);
+            return savedUser.getId() != null;
+        } else {
             throw new RuntimeException("Customer with same user name is already exist");
         }
+    }
 
-        String encPwd = passwordEncoder.encode(registerCustomer.getPassword());
-        registerCustomer.setPassword(encPwd);
-        CustomerEntity customerEntity = new CustomerEntity();
-        BeanUtils.copyProperties(registerCustomer, customerEntity);
-        CustomerEntity savedUser = customerRepository.save(customerEntity);
-        return savedUser.getId() != null;
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.info("[CustomerServiceImpl] >> [loadUserByUsername] : {}", email);
+        CustomerEntity customerEntity = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for this email: " + email));
+        return new User(customerEntity.getUserName(), customerEntity.getPassword(), Collections.emptyList());
     }
 
     @Override
@@ -89,6 +104,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public boolean deleteCustomerById(Long id) throws ResourceNotFoundException {
+        log.info("[CustomerServiceImpl] >> [deleteCustomerById] : {}", id);
+        CustomerEntity customerEntity = customerRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this idd:" + id));
+        customerRepository.delete(customerEntity);
+        return true;
+    }
+
+    @Override
     public List<GetCustomerDetails> getAllCustomers() {
         List<CustomerEntity> customerEntityList = customerRepository.findAll();
         List<GetCustomerDetails> getCustomerDetailsList = customerEntityList.stream().map((customerEntity) -> {
@@ -105,4 +129,4 @@ public class CustomerServiceImpl implements CustomerService {
     }
 }
 
-//            return new GetCustomerDetails(customerEntity.getId(), customerEntity.getName(), customerEntity.getUserName(), customerEntity.getEmail(), customerEntity.getMobile(), customerEntity.getRole(), customerEntity.getPassword());
+//return new GetCustomerDetails(customerEntity.getId(), customerEntity.getName(), customerEntity.getUserName(), customerEntity.getEmail(), customerEntity.getMobile(), customerEntity.getRole(), customerEntity.getPassword());

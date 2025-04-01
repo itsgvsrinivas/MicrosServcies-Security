@@ -6,13 +6,40 @@ import com.gv.user_service.util.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    private String getRequestPath() {
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest().getRequestURI();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<APIResponse> handleValidationException(MethodArgumentNotValidException methodArgumentNotValidException) {
+        log.info("[GlobalExceptionHandler] >> [handleValidationException]: {}", methodArgumentNotValidException.getMessage());
+        List<String> errors = methodArgumentNotValidException.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> "Invalid value: '" + error.getRejectedValue() + "' for field: '" + error.getField() + "'. " + error.getDefaultMessage())
+                .toList();
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, String.join(", ", errors),
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -32,14 +59,40 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
-
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<APIResponse> handleIllegalArgumentException(IllegalArgumentException illegalArgumentException) {
         log.info("[GlobalExceptionHandler] >> [handleIllegalArgumentException]: {}", illegalArgumentException.getMessage());
         APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, illegalArgumentException.getMessage(),
                 null, null);
-        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ResponseEntity<APIResponse> handleMethodNotAllowedException(HttpRequestMethodNotSupportedException httpRequestMethodNotSupportedException) {
+        log.info("[GlobalExceptionHandler] >> [handleMethodNotAllowedException]: {}", httpRequestMethodNotSupportedException.getMessage());
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, httpRequestMethodNotSupportedException.getMessage(),
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<APIResponse> handleInvalidJsonException(HttpMessageNotReadableException httpMessageNotReadableException) {
+        log.info("[GlobalExceptionHandler] >> [handleInvalidJsonException]: {}", httpMessageNotReadableException.getMessage());
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, httpMessageNotReadableException.getMessage(),
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<APIResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException methodArgumentTypeMismatchException) {
+        log.info("[GlobalExceptionHandler] >> [handleTypeMismatchException]: {}", methodArgumentTypeMismatchException.getMessage());
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, methodArgumentTypeMismatchException.getMessage(),
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
