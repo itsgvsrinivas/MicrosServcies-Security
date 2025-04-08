@@ -24,9 +24,7 @@ public class AuthenticationService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
     private final TokenRepository tokenRepository;
-
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(UserRepository repository,
@@ -53,7 +51,6 @@ public class AuthenticationService {
         user.setLastName(request.getLastName());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
 
         user.setRole(request.getRole());
 
@@ -141,6 +138,5 @@ public class AuthenticationService {
         }
 
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-
     }
 }

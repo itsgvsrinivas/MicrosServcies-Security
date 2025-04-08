@@ -7,11 +7,10 @@ import com.gv.user_service.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
     private final AuthenticationService authService;
@@ -20,6 +19,10 @@ public class AuthenticationController {
         this.authService = authService;
     }
 
+    @GetMapping("/test")
+    public String testApi() {
+        return "Hello World test API";
+    }
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(

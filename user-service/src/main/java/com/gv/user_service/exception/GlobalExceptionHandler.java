@@ -3,6 +3,8 @@ package com.gv.user_service.exception;
 import com.gv.user_service.dto.response.APIResponse;
 import com.gv.user_service.util.Constants;
 import com.gv.user_service.util.ResponseUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -144,6 +146,24 @@ public class GlobalExceptionHandler {
         APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, ex.getMessage(),
                 null, null);
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {ExpiredJwtException.class})
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
+        // Custom error message class
+        log.error("[GlobalExceptionHandler] >> [handleExpiredJwtException]: {}", ex.getMessage());
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, "Token provided is expired",
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = {SignatureException.class})
+    public ResponseEntity<Object> handleSignatureException(SignatureException ex, WebRequest request) {
+        // Custom error message class
+        log.error("[GlobalExceptionHandler] >> [handleSignatureException]: {}", ex.getMessage());
+        APIResponse apiResponse = ResponseUtils.createApiResponse(false, Constants.STATUS_CODE_FAILURE, "Token provided is invalid/expired",
+                null, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

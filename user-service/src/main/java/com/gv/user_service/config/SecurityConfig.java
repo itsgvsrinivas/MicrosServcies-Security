@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
             "/swagger-ui.html",
+            "/whoami",
             "/health-check",
             "/api/v1/preAuth/**",
             "/login/**", "/register/**", "/refresh_token/**"
@@ -54,7 +55,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+        log.info("[SecurityConfig] >> [securityFilterChain]");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
@@ -83,11 +84,13 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        log.info("[SecurityConfig] >> [passwordEncoder]");
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        log.info("[SecurityConfig] >> [authenticationManager]");
         return configuration.getAuthenticationManager();
     }
 }
