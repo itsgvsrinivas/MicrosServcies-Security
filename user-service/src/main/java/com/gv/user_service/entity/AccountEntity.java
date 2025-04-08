@@ -1,13 +1,15 @@
 package com.gv.user_service.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "account")
-@Data
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

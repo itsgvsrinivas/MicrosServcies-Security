@@ -16,6 +16,7 @@ public interface CustomerService {
     GetCustomerDetails getCustomerById(Long id);
 
     boolean deleteCustomerByEmail(String email);
+
     boolean deleteCustomerById(Long id);
 
     List<GetCustomerDetails> getAllCustomers();

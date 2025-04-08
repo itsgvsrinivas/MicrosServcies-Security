@@ -6,10 +6,6 @@ package com.gv.user_service.util;
  */
 public final class MessageKeys {
 
-    private MessageKeys() {
-        throw new UnsupportedOperationException();
-    }
-
     // info messages
     public static final String INFO_USER_LOGIN = "info.user.login";
     public static final String INFO_USER_CREATED = "info.user.created";
@@ -19,7 +15,6 @@ public final class MessageKeys {
     public static final String INFO_WALLET_DELETED = "info.wallet.deleted";
     public static final String INFO_WALLET_BALANCE_UPDATED = "info.wallet.balance.updated";
     public static final String INFO_WALLET_BALANCES_UPDATED = "info.wallet.balances.updated";
-
     // exception messages
     public static final String ERROR_UNKNOWN = "error.unknown";
     public static final String ERROR_UNAUTHORIZED = "error.unauthorized";
@@ -44,4 +39,7 @@ public final class MessageKeys {
     public static final String ERROR_WALLET_NOT_FOUND = "error.wallet.not.found";
     public static final String ERROR_TRANSACTION_NOT_FOUND = "error.transaction.not.found";
     public static final String ERROR_INSUFFICIENT_FUNDS = "error.insufficient.funds";
+    private MessageKeys() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -10,14 +10,9 @@ import com.gv.user_service.repository.CustomerRepository;
 import com.gv.user_service.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CustomerServiceImpl implements CustomerService, UserDetailsService {
+public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -53,14 +48,6 @@ public class CustomerServiceImpl implements CustomerService, UserDetailsService 
         } else {
             throw new RuntimeException("Customer with same user name is already exist");
         }
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("[CustomerServiceImpl] >> [loadUserByUsername] : {}", email);
-        CustomerEntity customerEntity = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for this email: " + email));
-        return new User(customerEntity.getUserName(), customerEntity.getPassword(), Collections.emptyList());
     }
 
     @Override
