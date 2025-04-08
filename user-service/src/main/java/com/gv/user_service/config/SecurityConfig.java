@@ -37,7 +37,7 @@ public class SecurityConfig {
             "/whoami",
             "/health-check",
             "/api/v1/preAuth/**",
-            "/login/**", "/register/**", "/refresh_token/**"
+            "/api/v1/auth/login/**", "/api/v1/auth/register/**", "/api/v1/auth/refresh_token/**"
     };
     private final UserDetailsServiceImp userDetailsServiceImp;
 
