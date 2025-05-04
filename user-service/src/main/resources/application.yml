@@ -35,7 +35,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health, logfile, loggers, env
+        include: info, health, loggers, env
 logging:
   file:
     name: application.log

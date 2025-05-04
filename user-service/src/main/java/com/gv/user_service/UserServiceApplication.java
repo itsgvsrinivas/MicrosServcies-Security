@@ -1,11 +1,16 @@
 package com.gv.user_service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@Slf4j
 @SpringBootApplication
 public class UserServiceApplication {
 
@@ -23,4 +28,17 @@ public class UserServiceApplication {
         //System.out.println("Bean: " + s);
     }
 
+    @Bean
+    ApplicationRunner applicationRunner() {
+        return args -> {
+            log.info("[UserServiceApplication] >> [applicationRunner]");
+        };
+    }
+
+    @Bean
+    CommandLineRunner commandLineRunner() {
+        return args -> {
+            log.info("[UserServiceApplication] >> [commandLineRunner]");
+        };
+    }
 }
